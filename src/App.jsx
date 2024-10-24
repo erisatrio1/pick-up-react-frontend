@@ -7,6 +7,9 @@ import Products from './pages/Products'
 import AddProduct from './pages/Addproduct'
 import EditProduct from './pages/EditProduct'
 import Users from './pages/Users'
+import Rentals from './pages/Rentals'
+import AddRental from './pages/AddRentals'
+import RentalUser from './pages/RentalUser'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -19,10 +22,12 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/users" element={<Users />} />
           <Route path="/users/add" element={<AddUser />} />
-          {/* <Route path="/users/edit/:id" element={<EditUser />} /> */}
           <Route path="/products" element={<Products />} />
+          <Route path="/rental" element={<Rentals />} />
+          <Route path="/listrental" element={<RentalUser />} />
+          <Route path="/rental/:unitId" element={<AddRental />} />
           <Route path="/products/add" element={<AddProduct />} />
-          <Route path="/products/edit/:id" element={<EditProduct />} />
+          <Route path="/products/edit/:unitId" element={<EditProduct />} />
         </Routes>
       </BrowserRouter>
     </div>

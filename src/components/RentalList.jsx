@@ -4,7 +4,7 @@ import axios from "axios";
 import axiosJWT from "../helpers/axios-inter"
 import { useSelector } from "react-redux";
 
-const ProductList = () => {
+const RentalList = ({access_token}) => {
   const [products, setProducts] = useState([]);
   const { accessToken } = useSelector((state) => state.auth);
 
@@ -14,7 +14,8 @@ const ProductList = () => {
 
   const getProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/units",{
+        console.log(accessToken);
+      const response = await axios.get("http://localhost:3000/api/units", {
         headers: {
           Authorization: `Bearer ${accessToken}`, 
         },
@@ -25,26 +26,10 @@ const ProductList = () => {
     }
   };
 
-  const deleteProduct = async (productId) => {
-    try {
-      await axios.delete(`http://localhost:3000/api/units/${productId}`,{
-        headers: {
-          Authorization: `Bearer ${accessToken}`, 
-        },
-      });
-      getProducts(); 
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    }
-  };
-
   return (
     <div>
-      <h1 className="title">Products</h1>
-      <h2 className="subtitle">List of Products</h2>
-      <Link to="/products/add" className="button is-primary mb-2">
-        Add New
-      </Link>
+      <h1 className="title">Rentals</h1>
+      <h2 className="subtitle">List of Rentals</h2>
       <table className="table is-striped is-fullwidth">
         <thead>
           <tr>
@@ -61,7 +46,6 @@ const ProductList = () => {
               <td>{index + 1}</td>
               <td>{product.name}</td>
               <td>
-                {/* Menampilkan kategori produk */}
                 {product.categories.map((cat, idx) => (
                   <span key={idx}>
                     {cat.category}
@@ -72,17 +56,11 @@ const ProductList = () => {
               <td>{product.price}</td>
               <td>
                 <Link
-                  to={`/products/edit/${product.id}`}
+                  to={`/rental/${product.id}`}
                   className="button is-small is-info"
                 >
-                  Edit
+                  Rental
                 </Link>
-                <button
-                  onClick={() => deleteProduct(product.id)}
-                  className="button is-small is-danger"
-                >
-                  Delete
-                </button>
               </td>
             </tr>
           ))}
@@ -92,4 +70,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default RentalList;

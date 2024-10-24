@@ -2,21 +2,31 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import axiosJWT from "../helpers/axios-inter";
+import { useSelector } from "react-redux";
 
 const Userlist = () => {
   const [users, setUsers] = useState([]);
+  const { accessToken } = useSelector((state) => state.auth);
 
   useEffect(() => {
     getUsers();
   }, []);
 
   const getUsers = async () => {
-    const response = await axiosJWT.get("http://localhost:3000/api/users");
+    const response = await axios.get("http://localhost:3000/api/users",{
+        headers: {
+          Authorization: `Bearer ${accessToken}`, 
+        },
+      });
     setUsers(response.data.data);
   };
 
   const deleteUser = async (userId) => {
-    await axiosJWT.delete(`http://localhost:5000/users/${userId}`);
+    await axios.delete(`http://localhost:5000/users/${userId}`,{
+        headers: {
+          Authorization: `Bearer ${accessToken}`, 
+        },
+      });
     getUsers();
   };
 

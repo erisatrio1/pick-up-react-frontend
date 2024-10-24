@@ -2,30 +2,36 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import axiosJWT from "../helpers/axios-inter"
+import { useSelector } from "react-redux";
 
 const FormAddProduct = () => {
   const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState(0);
   const [category1, setCategory1] = useState(""); // For first category
   const [category2, setCategory2] = useState(""); // For second category
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
+  const { accessToken } = useSelector((state) => state.auth);
 
   const saveProduct = async (e) => {
     e.preventDefault();
     try {
-      await axiosJWT.post("http://localhost:3000/api/units", {
+      await axios.post("http://localhost:3000/api/units", {
         name: name,
         categories: [
           { category: category1 }, 
           { category: category2 }
         ],
-        price: price,
+        price: Number(price),
+      },{
+        headers: {
+          Authorization: `Bearer ${accessToken}`, 
+        },
       });
       navigate("/products");
     } catch (error) {
       if (error.response) {
-        setMsg(error.response.data.msg);
+        setMsg(error.response.data.errors);
       }
     }
   };

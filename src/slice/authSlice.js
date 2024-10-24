@@ -1,43 +1,40 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import Cookies from 'js-cookie';
 
-// Initial state untuk auth
 const initialState = {
-  user: null,         // Data user (nama, email, role)
-  accessToken: null,  // Access token
-  isLoading: false,   // Status loading
-  isSuccess: false,   // Status sukses
-  isError: false,     // Status error
-  message: "",        // Pesan error
+  user: null,      
+  accessToken: null,  
+  refreshToken: null,  
+  isLoading: false,   
+  isSuccess: false,   
+  isError: false,     
+  message: "",        
   expire: null,
 };
 
-// Async thunk untuk login
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (userData, thunkAPI) => {
     try {
-      // Kirim permintaan login ke server
+
       const response = await axios.post("http://localhost:3000/api/users/login", userData);
 
-      // Ambil access token dari response
       const accessToken = response.data.access_token;
+      Cookies.set('refresh_token', response.data.refresh_token, { path: '/', expires: 1, sameSite: 'None', secure: false });
 
-      return accessToken;  // Mengembalikan access token ke fulfilled
+      return accessToken;  
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data.message);
+      return thunkAPI.rejectWithValue(error.response.data.errors);
     }
   }
 );
 
-// Async thunk untuk mendapatkan access token baru dengan refresh token
 export const refreshToken = createAsyncThunk("auth/refreshToken", async (_, thunkAPI) => {
   try {
-    // Kirim request untuk mendapatkan access token baru
     const response = await axios.get("http://localhost:3000/api/users/refresh", { withCredentials: true }); // withCredentials untuk mengirim cookie HttpOnly
     
-    // Ambil access token baru
     const accessToken = response.data.access_token;
 
     return accessToken;
@@ -46,26 +43,24 @@ export const refreshToken = createAsyncThunk("auth/refreshToken", async (_, thun
   }
 });
 
-// Async thunk untuk mendapatkan user dari token
 export const getMe = createAsyncThunk("auth/getMe", async (_, thunkAPI) => {
   try {
-    // Ambil token dari state
     const token = thunkAPI.getState().auth.accessToken;
 
     if (!token) {
       throw new Error("No token found");
     }
 
-    // Decode token untuk mendapatkan informasi user
     const decoded = jwtDecode(token);
 
-    return decoded;  // Mengembalikan data user yang didecode
+    return decoded;  
   } catch (error) {
     return thunkAPI.rejectWithValue(error.message);
   }
 });
 
 export const LogOut = createAsyncThunk("user/LogOut", async() => {
+    Cookies.remove('refresh_token', { path: '/' });
     await axios.delete('http://localhost:3000/api/users/current');
 });
 
@@ -77,35 +72,30 @@ export const authSlice = createSlice({
       state.user = null;
       state.accessToken = null;
       state.isSuccess = false;
-      localStorage.removeItem("accessToken");  // Hapus token dari localStorage
+      localStorage.removeItem("accessToken");  
     },
     reset: (state) => {
       state.isError = false;
       state.isSuccess = false;
       state.message = "";
     },
-    // Action untuk meng-update token
     setToken: (state, action) => {
-        state.user.accessToken = action.payload; // payload adalah token baru
+        state.user.accessToken = action.payload; 
     },
-    // Action untuk meng-update expire time jika diperlukan
     setExpire: (state, action) => {
-        state.user.expire = action.payload; // payload adalah waktu expire baru
+        state.user.expire = action.payload; 
     },
   },
   extraReducers: (builder) => {
-    // Ketika login dimulai
     builder.addCase(loginUser.pending, (state) => {
       state.isLoading = true;
     });
 
-    // Ketika login berhasil
     builder.addCase(loginUser.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
-      state.accessToken = action.payload;  // Simpan access token
+      state.accessToken = action.payload;  
 
-      // Decode token untuk mendapatkan data user (nama, email, role)
       const decoded = jwtDecode(action.payload);
       state.user = {
         name: decoded.name,
@@ -115,25 +105,21 @@ export const authSlice = createSlice({
       state.expire = decoded.exp;
     });
 
-    // Ketika login gagal
     builder.addCase(loginUser.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = true;
       state.message = action.payload;
     });
 
-    // Ketika refresh token dimulai
     builder.addCase(refreshToken.pending, (state) => {
       state.isLoading = true;
     });
 
-    // Ketika refresh token berhasil
     builder.addCase(refreshToken.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
-      state.accessToken = action.payload;  // Simpan access token baru
+      state.accessToken = action.payload;  
 
-      // Decode token untuk mendapatkan data user (nama, email, role)
       const decoded = jwtDecode(action.payload);
       state.user = {
         name: decoded.name,
@@ -142,19 +128,16 @@ export const authSlice = createSlice({
       };
     });
 
-    // Ketika refresh token gagal
     builder.addCase(refreshToken.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = true;
       state.message = action.payload;
     });
 
-    // Ketika getMe dimulai
     builder.addCase(getMe.pending, (state) => {
       state.isLoading = true;
     });
 
-    // Ketika getMe berhasil
     builder.addCase(getMe.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
@@ -165,7 +148,6 @@ export const authSlice = createSlice({
       };
     });
 
-    // Ketika getMe gagal
     builder.addCase(getMe.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = true;
@@ -174,8 +156,6 @@ export const authSlice = createSlice({
   },
 });
 
-// Export action untuk logout dan reset
 export const { logout, reset, setToken, setExpire } = authSlice.actions;
 
-// Export reducer untuk authSlice
 export default authSlice.reducer;

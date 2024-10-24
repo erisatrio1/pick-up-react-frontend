@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import axiosJWT from "../helpers/axios-inter"
+import { useSelector } from "react-redux";
 
 const FormAddUser = () => {
   const [name, setName] = useState("");
@@ -11,21 +12,26 @@ const FormAddUser = () => {
   const [role, setRole] = useState("");
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
+  const { accessToken } = useSelector((state) => state.auth);
 
   const saveUser = async (e) => {
     e.preventDefault();
     try {
-      await axiosJWT.post("http://localhost:3000/api/users", {
+      await axios.post("http://localhost:3000/api/users", {
         name: name,
         email: email,
         password: password,
         confPassword: confPassword,
         role: role,
+      },{
+        headers: {
+          Authorization: `Bearer ${accessToken}`, 
+        },
       });
       navigate("/users");
     } catch (error) {
       if (error.response) {
-        setMsg(error.response.data.msg);
+        setMsg(error.response.data.errors);
       }
     }
   };

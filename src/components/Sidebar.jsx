@@ -26,8 +26,8 @@ const Sidebar = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink to={"/products"}>
-              <IoPricetag /> Products
+            <NavLink to={"/rental"}>
+              <IoPricetag /> Rental
             </NavLink>
           </li>
         </ul>
@@ -35,6 +35,16 @@ const Sidebar = () => {
           <div>
             <p className="menu-label">Admin</p>
             <ul className="menu-list">
+            <li>
+              <NavLink to={"/listrental"}>
+                <IoPricetag /> List Rental
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to={"/products"}>
+                <IoPricetag /> Products
+              </NavLink>
+            </li>
               <li>
                 <NavLink to={"/users"}>
                   <IoPerson /> Users
