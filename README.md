@@ -1,8 +1,16 @@
-# React + Vite
+# Kelompok OSS
+## Anggota 
+Eri Satrio Nusantara
+## Deskripsi backend 
+Project ini adalah bagian backend dari sistem penyewaan mobil pick up. 
+## List fitur 
+1. Autentikasi dengan JWT (refresh token dan access token).
+2. Terdapat dua role yaitu Admin dan Anggota.
+3. Anggota bisa meminjam mobil pick up tidak lebih dari 2 mobil.
+4. Anggota harus menghubungi Admin untuk pengembalian mobil.
+5. Terdapat validasi di sisi backend dengan Zod.
+6. Untuk penggunaan API bisa lihat folder doc
+7. Berikut adalah link front-end = https://github.com/erisatrio1/pick-up-typescript-backend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## DB Schema
+![alt text](image.png)
