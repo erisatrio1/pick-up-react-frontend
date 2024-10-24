@@ -14,3 +14,6 @@ Project ini adalah bagian backend dari sistem penyewaan mobil pick up.
 
 ## DB Schema
 ![alt text](image.png)
+
+## Link Demo
+https://youtu.be/1JJW6vgAv48
